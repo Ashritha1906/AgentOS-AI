@@ -1,0 +1,135 @@
+{
+  "chats": [
+    {
+      "id": "d625b37f-cc6d-4e35-9021-49dd5e4fb006",
+      "title": "What is the weather in Hyderab...",
+      "created_at": 1781851543.730047,
+      "messages": [
+        {
+          "id": "d0ec66fd-9fe0-48ad-9d06-3a8a4f26dc96",
+          "role": "user",
+          "content": "What is the weather in Hyderabad?",
+          "steps": [],
+          "timestamp": 1781851543.7472608
+        },
+        {
+          "id": "0824cf16-82a7-4c81-a3af-9a494e87b700",
+          "role": "user",
+          "content": "what is weather in new york?",
+          "steps": [],
+          "timestamp": 1781851701.4706502
+        },
+        {
+          "id": "c225443e-7b26-47b0-a70c-c171b07e940b",
+          "role": "user",
+          "content": "what is weather in new york?",
+          "steps": [],
+          "timestamp": 1781851705.8921769
+        },
+        {
+          "id": "f8343555-b6cc-4e00-b827-0d84ed3d5620",
+          "role": "assistant",
+          "content": "According to real-time data from wttr.in:\n\nThe weather in new is Patchy rain nearby +18\u00b0C.\n\nI hope this helps you plan your day!",
+          "steps": [
+            {
+              "step": "plan",
+              "content": "Analyzing user request: 'what is weather in new york?'"
+            },
+            {
+              "step": "plan",
+              "content": "Identified tool execution path: Need to call 'get_weather' with input 'new'."
+            },
+            {
+              "step": "action",
+              "function": "get_weather",
+              "input": "new"
+            },
+            {
+              "step": "observe",
+              "output": "The weather in new is Patchy rain nearby +18\u00b0C."
+            },
+            {
+              "step": "output",
+              "content": "According to real-time data from wttr.in:\n\nThe weather in new is Patchy rain nearby +18\u00b0C.\n\nI hope this helps you plan your day!"
+            }
+          ],
+          "timestamp": 1781851705.9068031
+        },
+        {
+          "id": "c2a9a7e8-390e-462a-85d6-549c8c5947d9",
+          "role": "assistant",
+          "content": "According to real-time data from wttr.in:\n\nThe weather in new is Patchy rain nearby +18\u00b0C.\n\nI hope this helps you plan your day!",
+          "steps": [
+            {
+              "step": "plan",
+              "content": "Analyzing user request: 'what is weather in new york?'"
+            },
+            {
+              "step": "plan",
+              "content": "Identified tool execution path: Need to call 'get_weather' with input 'new'."
+            },
+            {
+              "step": "action",
+              "function": "get_weather",
+              "input": "new"
+            },
+            {
+              "step": "observe",
+              "output": "The weather in new is Patchy rain nearby +18\u00b0C."
+            },
+            {
+              "step": "output",
+              "content": "According to real-time data from wttr.in:\n\nThe weather in new is Patchy rain nearby +18\u00b0C.\n\nI hope this helps you plan your day!"
+            }
+          ],
+          "timestamp": 1781851705.9122567
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "gemini_api_key": "",
+    "model": "gemini-2.5-flash",
+    "temperature": 0.2,
+    "tools": {
+      "get_weather": true,
+      "calculator": true,
+      "search_wikipedia": true,
+      "run_command": true
+    }
+  },
+  "executions": [
+    {
+      "id": "1645c3ef-ff6b-4e4b-bf7a-c39da1c24065",
+      "tool": "get_weather",
+      "status": "success",
+      "duration": 1.0951805114746094,
+      "input": "new",
+      "output": "The weather in new is Patchy rain nearby +18\u00b0C.",
+      "timestamp": 1781851704.8202155
+    },
+    {
+      "id": "d8f56f0e-fd89-4a78-95cb-7743525419d7",
+      "tool": "get_weather",
+      "status": "success",
+      "duration": 1.3075010776519775,
+      "input": "Hyderabad",
+      "output": "The weather in Hyderabad is Partly cloudy +32\u00b0C.",
+      "timestamp": 1781851547.3082337
+    },
+    {
+      "id": "34b1b4d3-44ac-439d-a8fd-700ceb8af03a",
+      "tool": "search_wikipedia",
+      "status": "success",
+      "duration": 3.2014026641845703,
+      "input": " Alan Turing",
+      "output": "Wikipedia Article: Alan Turing\n\nAlan Mathison Turing (; 23 June 1912 \u2013 7 June 1954) was an English mathematician, computer scientist, logician, cryptanalyst, philosopher and theoretical biologist. He was highly influential in the development of theoretical computer science, providing a formalisation of the concepts of algorithm and computation with the Turing machine, which can be considered a model of a general-purpose computer. Turing is widely considered to be the father of theoretical computer science.\nBorn in London, Turing was raised in southern England. He graduated from King's College, Cambridge, and in 1938, earned a doctorate degree from Princeton University. During World War II, Turing worked for the Government Code and Cypher School at Bletchley Park, Britain's codebreaking centre that produced Ultra intelligence. He led Hut 8, the section responsible for German naval cryptanalysis. Turing devised techniques for speeding the breaking of German ciphers, including improvements to the pre-war Polish bomba method, an electromechanical machine that could find settings for the Enigma machine. He played a crucial role in cracking intercepted messages that enabled the Allies to defeat the Axis powers in the Battle of the Atlantic and other engagements.\nAfter the war, Turing worked at the National Physical Laboratory, where he designed the Automatic Computing Engine, one of the first designs for a stored-program computer. In 1948, Turing joined Max Newman's Computing Machine Laboratory at the University ...",
+      "timestamp": 1781850285.8654387
+    }
+  ],
+  "analytics": {
+    "total_queries": 5,
+    "successful_executions": 3,
+    "failed_executions": 0
+  }
+}

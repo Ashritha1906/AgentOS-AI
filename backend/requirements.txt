@@ -1,0 +1,9 @@
+fastapi==0.110.0
+uvicorn==0.29.0
+openai==1.14.1
+requests==2.31.0
+pydantic==2.6.4
+python-multipart==0.0.9
+plotly>=5.18.0
+pandas>=2.0.0
+
