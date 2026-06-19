@@ -243,36 +243,6 @@ h1, h2, h3 {
     margin-top: 6px;
     overflow-x: auto;
 }
-
-/* Force visible high-contrast text on inputs, text areas, dropdowns and labels */
-input, textarea, select {
-    color: #ffffff !important;
-}
-/* Placeholders visibility */
-input::placeholder, textarea::placeholder {
-    color: rgba(255, 255, 255, 0.4) !important;
-}
-/* Baseweb Select selection container (dropdown value) */
-[data-baseweb="select"] * {
-    color: #ffffff !important;
-}
-/* Baseweb Popovers & listbox values (dropdown items) */
-[role="listbox"] *, [role="option"] *, [data-baseweb="popover"] * {
-    color: #ffffff !important;
-    background-color: #08090c !important;
-}
-/* Headers, paragraph text, metrics labels and checkbox text high-contrast colors */
-.stApp p, .stApp label, .stApp span, .stApp li {
-    color: #f1f5f9 !important;
-}
-/* Native slider metric value labels */
-div[data-testid="stSlider"] * {
-    color: #f1f5f9 !important;
-}
-/* Button text override */
-.stButton button p, .stFormSubmitButton button p {
-    color: #ffffff !important;
-}
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
