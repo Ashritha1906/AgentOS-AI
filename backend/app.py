@@ -15,7 +15,7 @@ try:
 except ModuleNotFoundError:
     from db_manager import DBManager
 
-app = FastAPI(title="AgentOS AI Backend")
+app = FastAPI(title="Astra Agent Backend")
 
 # Enable CORS for frontend
 app.add_middleware(
@@ -54,7 +54,7 @@ def calculator(expression: str) -> str:
 def search_wikipedia(topic: str) -> str:
     try:
         url = "https://en.wikipedia.org/w/api.php"
-        headers = {"User-Agent": "AgentOS-AI/1.0"}
+        headers = {"User-Agent": "Astra-Agent/1.0"}
         
         # Search article
         search_params = {

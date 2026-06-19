@@ -25,7 +25,7 @@ db = DBManager()
 # PAGE CONFIGURATIONS & COMPREHENSIVE CUSTOM CSS INJECTION
 # ==========================================================================
 st.set_page_config(
-    page_title="AgentOS AI",
+    page_title="Astra Agent",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -242,6 +242,8 @@ h1, h2, h3 {
     padding: 10px;
     margin-top: 6px;
     overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
 }
 </style>
 """
@@ -314,36 +316,84 @@ except ImportError:
         from backend.app import run_agent_loop
     except ImportError:
         async def run_agent_loop(chat_id: str, message: str):
-            yield f'data: {{"step": "plan", "content": "Analyzing query: \'{message}\'"}}\n\n'
+            db.increment_queries()
+            steps_taken = []
+            
+            # Step 1: Plan
+            step1 = {"step": "plan", "content": f"Analyzing query: '{message}'"}
+            steps_taken.append(step1)
+            yield f"data: {json.dumps(step1)}\n\n"
             await asyncio.sleep(0.5)
+            
+            final_content = ""
+            
             # Weather
             if "weather" in message.lower():
-                yield f'data: {{"step": "plan", "content": "Query triggers weather tool. Resolving Location."}}\n\n'
+                step2 = {"step": "plan", "content": "Query triggers weather tool. Resolving Location."}
+                steps_taken.append(step2)
+                yield f"data: {json.dumps(step2)}\n\n"
                 await asyncio.sleep(0.5)
-                yield f'data: {{"step": "action", "function": "get_weather", "input": "Hyderabad"}}\n\n'
+                
+                step3 = {"step": "action", "function": "get_weather", "input": "Hyderabad"}
+                steps_taken.append(step3)
+                yield f"data: {json.dumps(step3)}\n\n"
                 await asyncio.sleep(0.5)
+                
                 out = get_weather("Hyderabad")
-                yield f'data: {{"step": "observe", "output": "{out}"}}\n\n'
+                step4 = {"step": "observe", "output": out}
+                steps_taken.append(step4)
+                yield f"data: {json.dumps(step4)}\n\n"
                 await asyncio.sleep(0.5)
-                yield f'data: {{"step": "output", "content": "The weather in Hyderabad is Cloudy and 29 degrees Celsius. Recommended for indoor operations."}}\n\n'
+                
+                final_content = "The weather in Hyderabad is Cloudy and 29 degrees Celsius. Recommended for indoor operations."
+                step5 = {"step": "output", "content": final_content}
+                steps_taken.append(step5)
+                yield f"data: {json.dumps(step5)}\n\n"
             elif "calculate" in message.lower() or any(c in message for c in "+*/-"):
-                yield f'data: {{"step": "plan", "content": "Query triggers math evaluation. Validating expression."}}\n\n'
+                step2 = {"step": "plan", "content": "Query triggers math evaluation. Validating expression."}
+                steps_taken.append(step2)
+                yield f"data: {json.dumps(step2)}\n\n"
                 await asyncio.sleep(0.5)
-                yield f'data: {{"step": "action", "function": "calculator", "input": "500 * 25"}}\n\n'
+                
+                step3 = {"step": "action", "function": "calculator", "input": "500 * 25"}
+                steps_taken.append(step3)
+                yield f"data: {json.dumps(step3)}\n\n"
                 await asyncio.sleep(0.5)
+                
                 out = calculator("500 * 25")
-                yield f'data: {{"step": "observe", "output": "{out}"}}\n\n'
+                step4 = {"step": "observe", "output": out}
+                steps_taken.append(step4)
+                yield f"data: {json.dumps(step4)}\n\n"
                 await asyncio.sleep(0.5)
-                yield f'data: {{"step": "output", "content": "The calculation 500 * 25 evaluates to 12,500."}}\n\n'
+                
+                final_content = "The calculation 500 * 25 evaluates to 12,500."
+                step5 = {"step": "output", "content": final_content}
+                steps_taken.append(step5)
+                yield f"data: {json.dumps(step5)}\n\n"
             else:
-                yield f'data: {{"step": "plan", "content": "Query triggers general research tool. Querying Wikipedia."}}\n\n'
+                step2 = {"step": "plan", "content": "Query triggers general research tool. Querying Wikipedia."}
+                steps_taken.append(step2)
+                yield f"data: {json.dumps(step2)}\n\n"
                 await asyncio.sleep(0.5)
-                yield f'data: {{"step": "action", "function": "search_wikipedia", "input": "{message}"}}\n\n'
+                
+                step3 = {"step": "action", "function": "search_wikipedia", "input": message}
+                steps_taken.append(step3)
+                yield f"data: {json.dumps(step3)}\n\n"
                 await asyncio.sleep(0.5)
+                
                 out = search_wikipedia(message)
-                yield f'data: {{"step": "observe", "output": "{out}"}}\n\n'
+                step4 = {"step": "observe", "output": out}
+                steps_taken.append(step4)
+                yield f"data: {json.dumps(step4)}\n\n"
                 await asyncio.sleep(0.5)
-                yield f'data: {{"step": "output", "content": "Wikipedia returned information summarizing {message}."}}\n\n'
+                
+                final_content = f"Wikipedia returned information summarizing {message}."
+                step5 = {"step": "output", "content": final_content}
+                steps_taken.append(step5)
+                yield f"data: {json.dumps(step5)}\n\n"
+                
+            db.add_message(chat_id, "user", message)
+            db.add_message(chat_id, "assistant", final_content, steps_taken)
 
 # ==========================================================================
 # SESSION STATE INITIALIZATION
@@ -378,17 +428,12 @@ def delete_chat_session(chat_id):
     st.session_state.streaming_steps = []
 
 # Helper: Run agent stream query
+# Helper: Run agent stream query
 async def run_agent_query(chat_id, user_message):
     st.session_state.is_typing = True
     st.session_state.streaming_steps = []
     
-    # Store initial user message
-    db.add_message(chat_id, "user", user_message)
-    
-    # Query runtime
     start_time = time.time()
-    db.increment_queries()
-    
     final_output = ""
     
     try:
@@ -410,9 +455,9 @@ async def run_agent_query(chat_id, user_message):
     except Exception as e:
         final_output = f"Execution error: {str(e)}"
         st.session_state.streaming_steps.append({"step": "output", "content": final_output})
+        db.add_message(chat_id, "user", user_message)
+        db.add_message(chat_id, "assistant", final_output, st.session_state.streaming_steps)
     
-    # Write final output to database
-    db.add_message(chat_id, "assistant", final_output, st.session_state.streaming_steps)
     st.session_state.is_typing = False
 
 # Run wrapper
@@ -430,7 +475,7 @@ with st.sidebar:
         <div style="width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px rgba(139,92,246,0.4);">
             <span style="font-weight:bold; color:white; font-size:16px;">🤖</span>
         </div>
-        <span style="font-family:'Outfit', sans-serif; font-size:18px; font-weight:800; color:white; letter-spacing:-0.03em;">AgentOS AI</span>
+        <span style="font-family:'Outfit', sans-serif; font-size:18px; font-weight:800; color:white; letter-spacing:-0.03em;">Astra Agent</span>
     </div>
     """, unsafe_allow_html=True)
     
@@ -563,7 +608,7 @@ if st.session_state.current_view == "workspace":
                 <div style="font-size:64px; margin-bottom:16px;">🤖</div>
                 <h3 style="color:white; margin-bottom:8px;">Autonomous AI Operator</h3>
                 <p style="color:var(--text-secondary); font-size:13px; max-width:440px; margin:0 auto 20px auto;">
-                    Input a command. The AgentOS engine will construct logical planning blocks, trigger backend system tools, digest outputs, and compile results.
+                    Input a command. The Astra Agent engine will construct logical planning blocks, trigger backend system tools, digest outputs, and compile results.
                 </p>
             </div>
             """, unsafe_allow_html=True)
@@ -645,6 +690,20 @@ if st.session_state.current_view == "workspace":
                 # Check icons and class categories
                 icon = "💡" if step_type == "plan" else "⚙️" if step_type == "action" else "👁️" if step_type == "observe" else "✅"
                 
+                input_html = ""
+                if "input" in step:
+                    input_html = f'<div class="code-shell">{step.get("input", "")}</div>'
+                
+                output_html = ""
+                if "output" in step:
+                    output_val = step.get("output", "")
+                    if step_type == "observe":
+                        # Truncate to at most 3 lines
+                        lines = output_val.splitlines()
+                        if len(lines) > 3:
+                            output_val = "\n".join(lines[:3]) + "\n..."
+                    output_html = f'<div class="code-shell" style="color:#f97316;">{output_val}</div>'
+                
                 st.markdown(f"""
                 <div class="timeline-card {step_type}">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
@@ -652,8 +711,8 @@ if st.session_state.current_view == "workspace":
                         <span style="font-family:'JetBrains Mono', monospace; font-size:9px; color:var(--text-muted);">STEP {i+1}</span>
                     </div>
                     <p style="font-size:12px; color:var(--text-primary); margin:0;">{step.get("content", step.get("function", "Digest outputs"))}</p>
-                    {f'<div class="code-shell">{step.get("input", "")}</div>' if "input" in step else ''}
-                    {f'<div class="code-shell" style="color:#f97316;">{step.get("output", "")}</div>' if "output" in step else ''}
+                    {input_html}
+                    {output_html}
                 </div>
                 """, unsafe_allow_html=True)
                 
